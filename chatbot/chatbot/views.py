@@ -1,5 +1,5 @@
-from django.shortcuts import render
+from django.shortcuts import render,HttpResponse
 from django.http import JsonResponse
 
 def index(request):
-    return render(request, 'chatbot/index.html')
+    return HttpResponse("Hello, world. You're at the chatbot index.")
