@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import lmstudio as lms
-import ollama
+from ollama import generate
 import sys
 
 def index(request):
@@ -32,13 +32,16 @@ def chat_api_lmstudio(request):
 
 @csrf_exempt
 def chat_api_ollama(request):
-    try:
-        response = ollama.chat(model="gemma3:latest", messages=[
-            {"role": "user", "content": "test"}
-        ])
-        return JsonResponse({'response': "Ollama works!"}) # Just a simple response
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
+    if request.method == 'POST':
+        user_input = request.POST.get('user_input')
+        if user_input:
+            response = generate(model='gemma3:latest', prompt=user_input)
+            print(response['response'])
+            response = response['response']
+            return JsonResponse({'response': str(response)})
+        else:
+            return JsonResponse({'response': 'No input provided'})
+    return JsonResponse({'response': 'Invalid request method'})
 
 def uin_fontend(cp_request):
     user_input = ""
